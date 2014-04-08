@@ -38,8 +38,8 @@ field mapping. However, Feed Pull probably has everything you need and is very e
 1. Make sure "Pull feeds" is set to yes. Feeds are syndicated using WordPress cron. This means your content will be
 pulled in the background. By default feed pulls occur once per hour.
 
-Configure a Feed
---------------
+= Configure a Feed =
+
 1. After activating the plugin, you should now see a "Source Feeds" menu item in your admin menu. Add a new source
 feed.
 1. Enter the URL of any XML feed in the feed url input box.
