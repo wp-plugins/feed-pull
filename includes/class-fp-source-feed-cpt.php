@@ -335,7 +335,8 @@ class FP_Source_Feed_CPT {
 						</td>
 					</tr>
 				<?php endforeach; ?>
-			<?php for ( $i = 0; $i < count( self::get_required_fields() ); $i++ ) { if ( isset( $field_map[$i] ) ) unset( $field_map[$i] ); } foreach ( $field_map as $row_id => $field ) : ?>
+			<?php for ( $i = 0; $i < count( self::get_required_fields() ); $i++ ) { if ( isset( $field_map[$i] ) ) unset( $field_map[$i] ); }
+			if ( ! empty( $field_map ) ) : foreach ( $field_map as $row_id => $field ) : ?>
 				<tr data-mapping-row-id="<?php echo (int) $row_id; ?>">
 					<td>
 						<input type="text" name="fp_field_map[<?php echo (int) $row_id; ?>][source_field]" value="<?php if ( ! empty( $field['source_field'] ) ) echo esc_attr( $field['source_field'] ); ?>">
@@ -350,10 +351,10 @@ class FP_Source_Feed_CPT {
 						</select>
 					</td>
 					<td class="action">
-						<input type="button" class="button" value="<?php _e( 'Delete', 'feed-pull' ); ?>" class="delete">
+						<input type="button" class="button delete" value="<?php _e( 'Delete', 'feed-pull' ); ?>">
 					</td>
 				</tr>
-			<?php endforeach; ?>
+			<?php endforeach; endif; ?>
 			</tbody>
 		</table>
 
