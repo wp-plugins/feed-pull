@@ -20,6 +20,10 @@
             var $manualPullButton = $( '#fp_manual_pull' );
             var $postIDField = $( '#post_ID' );
             var $manualPullSpinner = $( '#fp-spinner' );
+            var $logMetaBox = $( '#fp_log .inside' );
+
+            var mappingRowTemplate = $( '#mapping-row-template' ).html();
+            var logItemTemplate = $( '#log-item-template' ).html();
 
             function getLastMappingRowID() {
                 return $mappingTableBody.find( 'tr').last().attr( 'data-mapping-row-id' );
@@ -31,9 +35,7 @@
 
             function handleAddNew( event ) {
                 var nextMappingRowID = parseInt( getLastMappingRowID() ) + 1;
-
-                var template = $( '#mapping-row-template' ).html();
-                var newRow = _.template( template, { rowID : nextMappingRowID } );
+                var newRow = _.template( mappingRowTemplate, { rowID : nextMappingRowID } );
                 $mappingTableBody.append( newRow );
             }
 
@@ -43,12 +45,13 @@
                 $.ajax( {
                     'type' : 'post',
                     'url' : ajaxurl,
+                    'dataType' : 'json',
                     'data' : {
                         'action' : 'pull',
                         'nonce' : FP_Settings.nonce,
                         'source_feed_id' : $postIDField.val()
                     }
-                }).complete( function() {
+                } ).always( function() {
                     $manualPullSpinner.animate( { 'opacity' : 0 } );
                 } );
             }
