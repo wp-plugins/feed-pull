@@ -23,7 +23,36 @@ class FP_Source_Feed_CPT {
 		add_filter( 'manage_fp_feed_posts_columns' , array( $this, 'filter_columns' ) );
 		add_action( 'manage_fp_feed_posts_custom_column' , array( $this, 'action_custom_columns' ), 10, 2 );
 		add_action( 'post_submitbox_misc_actions', array( $this, 'action_post_submitbox_misc_actions' ) );
+		add_action( 'before_delete_post', array( $this, 'action_delete_post' ) );
     }
+
+	/**
+	 * Mark a post as deleted if it has been syndicated
+	 *
+	 * @param int $post_id
+	 * @since 0.1.6
+	 */
+	public function action_delete_post( $post_id ) {
+
+		$source_feed_id = get_post_meta( $post_id, 'fp_source_feed_id', true );
+
+		if ( ! empty( $source_feed_id ) ) {
+
+			$guid = get_post_meta( $post_id, 'fp_guid', true );
+
+			if ( ! empty( $guid ) ) {
+				$guid = esc_url_raw( $guid );
+
+				$deleted_posts = get_option( FP_DELETED_OPTION_NAME, array() );
+
+				if ( ! in_array( $guid, $deleted_posts ) ) {
+					$deleted_posts[] = $guid;
+
+					update_option( FP_DELETED_OPTION_NAME, $deleted_posts );
+				}
+			}
+		}
+	}
 
 	/**
 	 * Enqueue post new/edit screen scripts/styles
@@ -365,12 +394,12 @@ class FP_Source_Feed_CPT {
 		$field_map = get_post_meta( $post->ID, 'fp_field_map', true );
 
 		?>
-		<p><em><?php _e( 'Map fields from your source feed to fields in your new content.', 'feed-pull' ); ?></em></p>
+		<p><em><?php _e( 'Map fields from your source feed to locations in your new content.', 'feed-pull' ); ?></em></p>
 		<table cellpadding="0" cellspacing="0">
 			<thead>
 				<tr>
 					<th><?php _e( 'Source Field (XPath)', 'feed-pull' ); ?></th>
-					<th><?php _e( 'New Post Field', 'feed-pull' ); ?></th>
+					<th><?php _e( 'New Post Location', 'feed-pull' ); ?></th>
 					<th><?php _e( 'Mapping Type', 'feed-pull' ); ?></th>
 					<th class="action"></th>
 				</tr>
@@ -389,6 +418,7 @@ class FP_Source_Feed_CPT {
 							<select disabled="true">
 								<option value="post_field"><?php _e( 'Post Field', 'feed-pull' ); ?></option>
 								<option value="post_meta"><?php _e( 'Post Meta', 'feed-pull' ); ?></option>
+								<option value="taxonomy"><?php _e( 'Taxonomy', 'feed-pull' ); ?></option>
 							</select>
 							<input type="hidden" name="fp_field_map[<?php echo (int) $i; ?>][mapping_type]" value="post_field">
 						</td>
@@ -410,6 +440,7 @@ class FP_Source_Feed_CPT {
 						<select name="fp_field_map[<?php echo (int) $row_id; ?>][mapping_type]">
 							<option <?php  if ( ! empty( $field['mapping_type'] ) ) selected( 'post_field', $field['mapping_type'] ); ?> value="post_field"><?php _e( 'Post Field', 'feed-pull' ); ?></option>
 							<option <?php  if ( ! empty( $field['mapping_type'] ) ) selected( 'post_meta', $field['mapping_type'] ); ?> value="post_meta"><?php _e( 'Post Meta', 'feed-pull' ); ?></option>
+							<option <?php  if ( ! empty( $field['mapping_type'] ) ) selected( 'taxonomy', $field['mapping_type'] ); ?> value="taxonomy"><?php _e( 'Taxonomy', 'feed-pull' ); ?></option>
 						</select>
 					</td>
 					<td class="action">
@@ -432,6 +463,7 @@ class FP_Source_Feed_CPT {
 					<select name="fp_field_map[<%- rowID %>][mapping_type]">
 						<option value="post_field"><?php _e( 'Post Field', 'feed-pull' ); ?></option>
 						<option value="post_meta"><?php _e( 'Post Meta', 'feed-pull' ); ?></option>
+						<option value="taxonomy"><?php _e( 'Taxonomy', 'feed-pull' ); ?></option>
 					</select>
 				</td>
 				<td class="action">
