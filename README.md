@@ -39,7 +39,7 @@ XPath: [http://www.w3schools.com/XPath/](http://www.w3schools.com/XPath/)
 1. Finally, we need to map fields in the feed to your new posts. Title and GUID are required. Title is
 self-explanatory. A GUID is a unique identifier for posts. Items within your feed should have some sort of GUID or
 permalink that you can map to the post GUID. GUID's allow the plugin to determine if a piece of content has already
-been syndicated or not.
+been syndicated or not. There is an in-depth section on field mapping below.
 
 Atom Feeds and Custom Namespaces
 --------------
@@ -54,3 +54,45 @@ You should use the prefix in your XPath queries. For example, instead of "//feed
 "//default:feed/default:entry". Instead of "title" in your field map, your query should probably be "default:title".
 
 You can learn more about namespaces here: [http://www.w3schools.com/xml/xml_namespaces.asp](http://www.w3schools.com/xml/xml_namespaces.asp)
+
+Field Mapping
+--------------
+When configuring a source feed, you need to tell Feed Pull which XML nodes map to where within WordPress. Here are the current
+mapping types supported by the plugin:
+
+1. Post Field (Map content to fields within the post table)
+1. Post Meta (Map content to fields within the post_meta table that refer to the post being created)
+1. Taxonomy (Map content to terms in any taxonomy that relate to the post being created)
+
+Let's see these mapping types in action. Here is a super simple feed structure:
+```xml
+<channel>
+   <item>
+      <title>Post Title!</title>
+      <guid>http://yoursite.com/post-title</guid>
+      <copyright>CNN.com</copyright>
+      <tag>United States</tag>
+      <tag>Politics</tag>
+   </item>
+   <item>
+      <title>Another Post!</title>
+      <guid>http://yoursite.com/another-post</guid>
+      <copyright>CNN.com</copyright>
+      <tag>Celebrities</tag>
+   </item>
+</channel>
+```
+
+As you can see our simple XML document contains two "items". We installed Feed Pull because we want to create posts within
+WordPress for each of those items. Now we need to map XML nodes to places within each new post being created. Within the Field Mapping meta box
+there are two required mappings: Title and GUID. Therefore we MUST pick XML nodes in our feed to map to these things. For post_title,
+our "Source Field" will be "title". For guid, our "Source Field" will be guid. Simple right?
+
+Now we can map whatever nodes we want to post meta in our feed. For educationally purposes, let's say we want to map
+"copyright" to post meta for each new post being created. To do this our "Source Field" would be "copyright". Our new
+post location can be named whatever we want; let's say "post_copyright". For "Mapping Type", we choose "Post Meta".
+
+Like post meta there are no required taxonomy mappings. Let's create one anyway! We want the "tag" nodes in our feed
+to map to the "post_tag" taxonomy in WordPress. Therefore we create a new field mapping row with "tag" as "Source Field",
+"post_tag" as "New Post Location", and "Taxonomy" as "Mapping Type".
+
